@@ -10,7 +10,8 @@
       "Bash(uv run:*)",
       "Bash(timeout 10 uv run:*)",
       "Bash(timeout 15 uv run:*)",
-      "Bash(python -m json.tool:*)"
+      "Bash(python -m json.tool:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
