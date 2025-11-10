@@ -90,7 +90,12 @@ async function sendMessage() {
         if (!response.ok) throw new Error('Query failed');
 
         const data = await response.json();
-        
+
+        // Debug logging
+        console.log('Query response received:', data);
+        console.log('Sources:', data.sources);
+        console.log('Source links:', data.source_links);
+
         // Update session ID if new
         if (!currentSessionId) {
             currentSessionId = data.session_id;
@@ -98,7 +103,7 @@ async function sendMessage() {
 
         // Replace loading message with response
         loadingMessage.remove();
-        addMessage(data.answer, 'assistant', data.sources, data.source_links);
+        addMessage(data.answer, 'assistant', data.sources, data.source_links, data.chunks);
 
     } catch (error) {
         // Replace loading message with error
@@ -126,40 +131,63 @@ function createLoadingMessage() {
     return messageDiv;
 }
 
-function addMessage(content, type, sources = null, sourceLinks = null, isWelcome = false) {
+function addMessage(content, type, sources = null, sourceLinks = null, chunks = null, isWelcome = false) {
     const messageId = Date.now();
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}${isWelcome ? ' welcome-message' : ''}`;
     messageDiv.id = `message-${messageId}`;
-    
+
     // Convert markdown to HTML for assistant messages
     const displayContent = type === 'assistant' ? marked.parse(content) : escapeHtml(content);
-    
+
     let html = `<div class="message-content">${displayContent}</div>`;
-    
+
     if (sources && sources.length > 0) {
-        // Create sources with clickable links when available
+        // Debug logging
+        console.log('addMessage - sources:', sources);
+        console.log('addMessage - sourceLinks:', sourceLinks);
+        console.log('addMessage - chunks:', chunks);
+
+        // Create collapsible sources with inline chunk content
         const sourcesHtml = sources.map((source, index) => {
+            const chunk = chunks && chunks[index];
             const link = sourceLinks && sourceLinks[index];
-            if (link) {
-                return `<a href="${link}" target="_blank" class="source-link">${source}</a>`;
+
+            console.log(`Source ${index}: "${source}", Chunk length: ${chunk ? chunk.length : 0}`);
+
+            if (chunk) {
+                // Create nested collapsible for each source with chunk content
+                return `
+                    <details class="source-item-collapsible">
+                        <summary class="source-item-header">
+                            <span class="source-icon">📚</span>
+                            <span class="source-title">${escapeHtml(source)}</span>
+                            ${link ? `<a href="${link}" class="source-external-link" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" title="Open in new tab">↗</a>` : ''}
+                        </summary>
+                        <div class="source-chunk-content">${escapeHtml(chunk)}</div>
+                    </details>
+                `;
+            } else if (link) {
+                // Fallback to link if no chunk available
+                return `<a href="${link}" target="_blank" class="source-link" rel="noopener noreferrer">${escapeHtml(source)}</a>`;
             } else {
-                return source;
+                // Plain text if neither chunk nor link available
+                return `<div class="source-item">${escapeHtml(source)}</div>`;
             }
-        }).join(', ');
-        
+        }).join('');
+
         html += `
-            <details class="sources-collapsible">
+            <details class="sources-collapsible" open>
                 <summary class="sources-header">Sources</summary>
                 <div class="sources-content">${sourcesHtml}</div>
             </details>
         `;
     }
-    
+
     messageDiv.innerHTML = html;
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     return messageId;
 }
 
@@ -201,7 +229,7 @@ async function createNewSession() {
     chatInput.value = '';
     chatInput.disabled = false;
     sendButton.disabled = false;
-    addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, null, true);
+    addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, null, null, true);
 }
 
 // Load course statistics

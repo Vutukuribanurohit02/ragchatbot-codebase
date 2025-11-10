@@ -1,0 +1,161 @@
+Course: Introduction to Python Programming
+Instructor: Dr. Sarah Chen
+Course Link: https://example.com/python-intro
+
+Lesson 1: Getting Started with Python
+Lesson Link: https://example.com/python-intro/lesson-1
+
+Welcome to Introduction to Python Programming! In this first lesson, we'll cover the basics of Python programming language. Python is a high-level, interpreted programming language known for its simplicity and readability. It was created by Guido van Rossum and first released in 1991.
+
+Python is used in many areas including:
+- Web development
+- Data science and machine learning
+- Automation and scripting
+- Scientific computing
+- Artificial intelligence
+
+To get started with Python, you'll need to install Python on your computer. You can download it from python.org. We recommend using Python 3.9 or later. After installation, you can verify it by opening a terminal and typing `python --version`.
+
+Your first Python program is traditionally a "Hello, World!" program. Here's how you write it:
+
+print("Hello, World!")
+
+This simple program demonstrates the print() function, which outputs text to the console.
+
+Lesson 2: Variables and Data Types
+Lesson Link: https://example.com/python-intro/lesson-2
+
+In this lesson, we'll explore variables and data types in Python. Variables are containers for storing data values. Unlike other programming languages, Python has no command for declaring a variable. A variable is created the moment you first assign a value to it.
+
+Python has several built-in data types:
+- Integers (int): Whole numbers like 5, -3, 42
+- Floating-point numbers (float): Decimal numbers like 3.14, -0.5, 2.0
+- Strings (str): Text enclosed in quotes like "Hello", 'Python', """Multiline"""
+- Booleans (bool): True or False values
+- Lists: Ordered, mutable collections like [1, 2, 3]
+- Tuples: Ordered, immutable collections like (1, 2, 3)
+- Dictionaries: Key-value pairs like {"name": "John", "age": 30}
+- Sets: Unordered collections of unique items like {1, 2, 3}
+
+Example of variable assignment:
+name = "Alice"
+age = 25
+height = 5.6
+is_student = True
+
+You can check the type of a variable using the type() function:
+print(type(name))  # Output: <class 'str'>
+
+Lesson 3: Control Flow - Conditionals
+Lesson Link: https://example.com/python-intro/lesson-3
+
+Control flow statements allow you to execute different code blocks based on certain conditions. The most common control flow statement is the if-elif-else statement.
+
+The if statement executes a block of code if a condition is True:
+
+if temperature > 30:
+    print("It's hot outside!")
+
+You can add alternative conditions with elif (else if):
+
+if temperature > 30:
+    print("It's hot!")
+elif temperature > 20:
+    print("It's warm.")
+elif temperature > 10:
+    print("It's cool.")
+else:
+    print("It's cold!")
+
+Comparison operators in Python:
+- == (equal to)
+- != (not equal to)
+- > (greater than)
+- < (less than)
+- >= (greater than or equal to)
+- <= (less than or equal to)
+
+You can combine conditions using logical operators:
+- and: Both conditions must be True
+- or: At least one condition must be True
+- not: Inverts the condition
+
+Example:
+if age >= 18 and has_license:
+    print("You can drive!")
+
+Lesson 4: Loops and Iteration
+Lesson Link: https://example.com/python-intro/lesson-4
+
+Loops allow you to execute a block of code multiple times. Python has two main types of loops: for loops and while loops.
+
+The for loop iterates over a sequence (like a list, tuple, or string):
+
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+    print(fruit)
+
+You can use the range() function to loop a specific number of times:
+
+for i in range(5):
+    print(i)  # Prints 0, 1, 2, 3, 4
+
+The while loop continues as long as a condition is True:
+
+count = 0
+while count < 5:
+    print(count)
+    count += 1
+
+Loop control statements:
+- break: Exits the loop entirely
+- continue: Skips the rest of the current iteration
+- pass: Does nothing (placeholder)
+
+Example with break:
+for i in range(10):
+    if i == 5:
+        break
+    print(i)  # Prints 0, 1, 2, 3, 4
+
+Lesson 5: Functions
+Lesson Link: https://example.com/python-intro/lesson-5
+
+Functions are reusable blocks of code that perform specific tasks. They help organize code and make it more modular and maintainable.
+
+To define a function in Python, use the def keyword:
+
+def greet(name):
+    print(f"Hello, {name}!")
+
+greet("Alice")  # Output: Hello, Alice!
+
+Functions can return values using the return statement:
+
+def add(a, b):
+    return a + b
+
+result = add(5, 3)
+print(result)  # Output: 8
+
+Functions can have default parameter values:
+
+def greet(name="stranger"):
+    print(f"Hello, {name}!")
+
+greet()  # Output: Hello, stranger!
+greet("Bob")  # Output: Hello, Bob!
+
+You can also have multiple return values:
+
+def get_coordinates():
+    return 10, 20
+
+x, y = get_coordinates()
+print(f"x: {x}, y: {y}")
+
+Best practices for functions:
+- Give functions descriptive names
+- Keep functions focused on a single task
+- Use docstrings to document what the function does
+- Avoid modifying global variables inside functions

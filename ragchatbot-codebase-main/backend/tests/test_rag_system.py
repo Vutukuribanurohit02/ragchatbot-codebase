@@ -78,9 +78,12 @@ class TestRAGSystem:
             rag_system.tool_manager.get_last_source_links = Mock(
                 return_value=["https://example.com/lesson1"]
             )
+            rag_system.tool_manager.get_last_chunks = Mock(
+                return_value=["Sample chunk content"]
+            )
 
             # Execute query
-            response, sources, source_links = rag_system.query(
+            response, sources, source_links, chunks = rag_system.query(
                 "What is covered in lesson 1?"
             )
 
@@ -115,9 +118,10 @@ class TestRAGSystem:
             rag_system = RAGSystem(test_config)
             rag_system.tool_manager.get_last_sources = Mock(return_value=[])
             rag_system.tool_manager.get_last_source_links = Mock(return_value=[])
+            rag_system.tool_manager.get_last_chunks = Mock(return_value=[])
 
             # Execute query with session
-            response, sources, source_links = rag_system.query(
+            response, sources, source_links, chunks = rag_system.query(
                 "Follow up question", session_id="session123"
             )
 
@@ -131,10 +135,10 @@ class TestRAGSystem:
             call_args = mock_ai_gen.return_value.generate_response.call_args[1]
             assert call_args["conversation_history"] == "Previous conversation"
 
-            # Verify session was updated
+            # Verify session was updated (note: passes raw query, not wrapped prompt)
             mock_session.return_value.add_exchange.assert_called_once_with(
                 "session123",
-                "Answer this question about course materials: Follow up question",
+                "Follow up question",
                 "Follow-up response.",
             )
 
@@ -161,9 +165,10 @@ class TestRAGSystem:
             # Mock tool manager to simulate no results found (due to MAX_RESULTS=0)
             rag_system.tool_manager.get_last_sources = Mock(return_value=[])
             rag_system.tool_manager.get_last_source_links = Mock(return_value=[])
+            rag_system.tool_manager.get_last_chunks = Mock(return_value=[])
 
             # Execute query that should find content but doesn't due to config issue
-            response, sources, source_links = rag_system.query(
+            response, sources, source_links, chunks = rag_system.query(
                 "What is covered in the course?"
             )
 
@@ -171,6 +176,7 @@ class TestRAGSystem:
             assert "couldn't find" in response.lower() or "no" in response.lower()
             assert sources == []
             assert source_links == []
+            assert chunks == []
 
             # This demonstrates the "query failed" behavior
 
@@ -190,9 +196,10 @@ class TestRAGSystem:
             rag_system = RAGSystem(test_config)
             rag_system.tool_manager.get_last_sources = Mock(return_value=[])
             rag_system.tool_manager.get_last_source_links = Mock(return_value=[])
+            rag_system.tool_manager.get_last_chunks = Mock(return_value=[])
 
             # Execute query without session
-            response, sources, source_links = rag_system.query("What is AI?")
+            response, sources, source_links, chunks = rag_system.query("What is AI?")
 
             # Assert
             assert response == "Response without session."
@@ -279,11 +286,13 @@ class TestRAGSystem:
             patch("rag_system.AIGenerator"),
             patch("rag_system.SessionManager"),
             patch("os.path.exists") as mock_exists,
+            patch("os.path.isfile") as mock_isfile,
             patch("os.listdir") as mock_listdir,
         ):
 
             # Setup mocks
             mock_exists.return_value = True
+            mock_isfile.return_value = True  # All listed items are files
             mock_listdir.return_value = [
                 "course1.pdf",
                 "course2.txt",
@@ -478,10 +487,13 @@ class TestRAGSystem:
             rag_system.tool_manager.get_last_source_links = Mock(
                 return_value=["Link 1"]
             )
+            rag_system.tool_manager.get_last_chunks = Mock(
+                return_value=["Chunk 1"]
+            )
             rag_system.tool_manager.reset_sources = Mock()
 
             # Execute query
-            response, sources, source_links = rag_system.query("Test query")
+            response, sources, source_links, chunks = rag_system.query("Test query")
 
             # Assert sources were retrieved
             assert sources == ["Source 1"]
@@ -513,9 +525,12 @@ class TestRAGSystem:
             rag_system.tool_manager.get_last_source_links = Mock(
                 return_value=["https://example.com/lesson5"]
             )
+            rag_system.tool_manager.get_last_chunks = Mock(
+                return_value=["Complete chunk content"]
+            )
 
             # Execute complete flow
-            response, sources, source_links = rag_system.query(
+            response, sources, source_links, chunks = rag_system.query(
                 "Explain the complete concept from lesson 5"
             )
 

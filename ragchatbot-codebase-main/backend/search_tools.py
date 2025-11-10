@@ -25,6 +25,7 @@ class CourseSearchTool(Tool):
         self.store = vector_store
         self.last_sources = []  # Track sources from last search
         self.last_source_links = []  # Track lesson links from last search
+        self.last_chunks = []  # Track actual text chunks from last search
 
     def get_tool_definition(self) -> Dict[str, Any]:
         """Return Anthropic tool definition for this tool"""
@@ -95,6 +96,9 @@ class CourseSearchTool(Tool):
         formatted = []
         sources = []  # Track sources for the UI
         source_links = []  # Track lesson links for the UI
+        chunks = []  # Track actual text chunks for the UI
+
+        print(f"[CourseSearchTool] Formatting {len(results.documents)} results")
 
         for doc, meta in zip(results.documents, results.metadata):
             course_title = meta.get("course_title", "unknown")
@@ -112,17 +116,31 @@ class CourseSearchTool(Tool):
                 source += f" - Lesson {lesson_num}"
             sources.append(source)
 
-            # Get lesson link if available
+            # Get lesson link if available, fallback to course link
             lesson_link = None
             if lesson_num is not None:
                 lesson_link = self.store.get_lesson_link(course_title, lesson_num)
+
+            # Fallback to course link if lesson link not available
+            if not lesson_link:
+                lesson_link = self.store.get_course_link(course_title)
+
             source_links.append(lesson_link)
+
+            # Store the actual text chunk for inline display
+            chunks.append(doc)
 
             formatted.append(f"{header}\n{doc}")
 
-        # Store sources and links for retrieval
+        # Store sources, links, and chunks for retrieval
         self.last_sources = sources
         self.last_source_links = source_links
+        self.last_chunks = chunks
+
+        print(f"[CourseSearchTool] Stored {len(sources)} sources")
+        print(f"[CourseSearchTool] Stored {len(source_links)} source links")
+        print(f"[CourseSearchTool] Stored {len(chunks)} chunks")
+        print(f"[CourseSearchTool] Source links: {source_links}")
 
         return "\n\n".join(formatted)
 
@@ -241,6 +259,14 @@ class ToolManager:
                 return tool.last_source_links
         return []
 
+    def get_last_chunks(self) -> list:
+        """Get text chunks from the last search operation"""
+        # Check all tools for last_chunks attribute
+        for tool in self.tools.values():
+            if hasattr(tool, "last_chunks") and tool.last_chunks:
+                return tool.last_chunks
+        return []
+
     def reset_sources(self):
         """Reset sources from all tools that track sources"""
         for tool in self.tools.values():
@@ -248,3 +274,5 @@ class ToolManager:
                 tool.last_sources = []
             if hasattr(tool, "last_source_links"):
                 tool.last_source_links = []
+            if hasattr(tool, "last_chunks"):
+                tool.last_chunks = []

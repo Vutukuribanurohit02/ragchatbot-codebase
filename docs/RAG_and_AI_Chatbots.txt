@@ -1,0 +1,196 @@
+Course: RAG and AI Chatbots
+Instructor: Prof. Michael Torres
+Course Link: https://example.com/rag-chatbots
+
+Lesson 1: Introduction to RAG (Retrieval-Augmented Generation)
+Lesson Link: https://example.com/rag-chatbots/lesson-1
+
+Welcome to RAG and AI Chatbots! This course explores Retrieval-Augmented Generation (RAG), a powerful technique that combines information retrieval with large language models to create more accurate and contextual AI systems.
+
+What is RAG?
+RAG stands for Retrieval-Augmented Generation. It's a technique that enhances large language models (LLMs) by providing them with relevant information retrieved from a knowledge base. Instead of relying solely on the model's training data, RAG systems first search for relevant documents or passages, then use that information to generate more informed responses.
+
+The RAG pipeline consists of three main components:
+1. Retrieval: Search for relevant documents from a knowledge base
+2. Augmentation: Combine the retrieved information with the user's query
+3. Generation: Use an LLM to generate a response based on the augmented context
+
+Benefits of RAG:
+- More accurate responses grounded in real data
+- Ability to work with up-to-date information
+- Reduced hallucinations from the LLM
+- Domain-specific knowledge without fine-tuning the entire model
+- Transparent sources for fact-checking
+
+RAG is particularly useful for:
+- Customer support chatbots
+- Document Q&A systems
+- Knowledge management systems
+- Research assistants
+- Educational tools
+
+Lesson 2: Vector Databases and Embeddings
+Lesson Link: https://example.com/rag-chatbots/lesson-2
+
+A critical component of RAG systems is the vector database, which stores and retrieves information based on semantic similarity rather than exact keyword matching.
+
+What are embeddings?
+Embeddings are numerical representations of text that capture semantic meaning. Similar concepts have similar embeddings, even if they use different words. For example, "dog" and "puppy" would have similar embeddings.
+
+Common embedding models:
+- OpenAI's text-embedding-ada-002
+- Sentence-BERT (SBERT)
+- all-MiniLM-L6-v2
+- E5 models
+- Instructor embeddings
+
+Vector databases store these embeddings and allow for fast similarity search. Popular vector databases include:
+- ChromaDB: Simple, open-source, and great for prototyping
+- Pinecone: Managed cloud service with high performance
+- Weaviate: Open-source with GraphQL support
+- Qdrant: Fast and scalable
+- Milvus: Production-ready for large scale
+
+How similarity search works:
+1. Convert user query to an embedding vector
+2. Search the database for the most similar vectors
+3. Retrieve the original text associated with those vectors
+4. Return the top K most similar results
+
+Distance metrics:
+- Cosine similarity: Measures the angle between vectors
+- Euclidean distance: Measures the straight-line distance
+- Dot product: Measures vector alignment
+
+Lesson 3: Building a RAG Pipeline
+Lesson Link: https://example.com/rag-chatbots/lesson-3
+
+Let's explore how to build a complete RAG pipeline from scratch.
+
+Step 1: Document Processing
+First, you need to prepare your documents:
+- Load documents from various sources (PDFs, Word docs, text files)
+- Split documents into chunks (typically 500-1000 characters)
+- Use overlap between chunks to maintain context
+- Store metadata (source, page number, title, etc.)
+
+Step 2: Create Embeddings
+Convert each chunk into an embedding:
+- Use a consistent embedding model
+- Normalize embeddings if needed
+- Store embeddings in the vector database along with the original text
+
+Step 3: Query Processing
+When a user asks a question:
+- Convert the query to an embedding using the same model
+- Search the vector database for similar chunks
+- Retrieve top K results (typically 3-5)
+- Extract the original text from matching chunks
+
+Step 4: Context Augmentation
+Prepare the context for the LLM:
+- Format the retrieved chunks
+- Add source attribution
+- Include relevant metadata
+- Construct a prompt that combines the query and retrieved information
+
+Step 5: Response Generation
+Use an LLM to generate the final response:
+- Provide clear instructions to the model
+- Include the retrieved context
+- Ask the model to cite sources
+- Set appropriate temperature and token limits
+
+Best practices:
+- Monitor retrieval quality
+- Implement hybrid search (keyword + semantic)
+- Use reranking for better results
+- Cache embeddings to save costs
+- Handle cases where no relevant information is found
+
+Lesson 4: Advanced RAG Techniques
+Lesson Link: https://example.com/rag-chatbots/lesson-4
+
+As you build more sophisticated RAG systems, you'll want to implement advanced techniques to improve performance.
+
+Hybrid Search:
+Combine semantic search with traditional keyword search for better recall. This is particularly useful when users search for specific terms, acronyms, or names.
+
+Query Rewriting:
+Sometimes user queries are ambiguous or poorly phrased. Use an LLM to rewrite queries for better retrieval:
+- Expand abbreviations
+- Add context from conversation history
+- Break complex queries into sub-queries
+- Generate multiple query variations
+
+Reranking:
+After initial retrieval, use a specialized model to rerank results:
+- Cross-encoders provide more accurate relevance scores
+- Consider user feedback and click-through rates
+- Apply business rules and filters
+- Balance relevance with diversity
+
+Metadata Filtering:
+Pre-filter results based on metadata:
+- Date ranges for time-sensitive information
+- Document types or categories
+- User permissions and access control
+- Language or region-specific content
+
+Multi-Query Retrieval:
+Generate multiple queries from the user's question and retrieve results for each:
+- Combine results using voting or score aggregation
+- Improves recall for complex questions
+- Reduces dependency on single query formulation
+
+Contextual Compression:
+Reduce noise in retrieved chunks:
+- Extract only relevant sentences
+- Remove boilerplate and formatting
+- Summarize long passages
+- Focus on information that answers the query
+
+Lesson 5: Evaluation and Optimization
+Lesson Link: https://example.com/rag-chatbots/lesson-5
+
+Evaluating RAG systems requires measuring both retrieval quality and generation quality.
+
+Retrieval Metrics:
+- Precision@K: Proportion of retrieved documents that are relevant
+- Recall@K: Proportion of relevant documents that were retrieved
+- Mean Reciprocal Rank (MRR): Average position of first relevant result
+- Normalized Discounted Cumulative Gain (NDCG): Accounts for position and relevance
+
+Generation Metrics:
+- Faithfulness: Does the response match the retrieved context?
+- Relevance: Does the response answer the question?
+- Coherence: Is the response well-structured and readable?
+- Groundedness: Are claims supported by sources?
+
+End-to-End Evaluation:
+Create test sets with:
+- Representative user questions
+- Ground truth answers
+- Known relevant documents
+- Edge cases and failure modes
+
+Optimization strategies:
+- Tune chunk size and overlap
+- Experiment with different embedding models
+- Adjust the number of retrieved chunks (K)
+- Optimize prompts for the LLM
+- Implement user feedback loops
+
+Common failure modes:
+- Retrieval fails to find relevant information
+- Retrieved context doesn't contain the answer
+- LLM ignores the context and hallucinates
+- Response is too generic or doesn't use specifics
+- Sources are not properly cited
+
+Monitoring in production:
+- Track query latency and costs
+- Monitor retrieval quality over time
+- Collect user feedback (thumbs up/down)
+- Identify frequently failing queries
+- A/B test improvements

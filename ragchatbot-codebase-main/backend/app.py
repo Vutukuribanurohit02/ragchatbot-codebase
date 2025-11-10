@@ -47,6 +47,7 @@ class QueryResponse(BaseModel):
     answer: str
     sources: List[str]
     source_links: List[Optional[str]]
+    chunks: List[str]
     session_id: str
 
 
@@ -76,12 +77,13 @@ async def query_documents(request: QueryRequest):
             session_id = rag_system.session_manager.create_session()
 
         # Process query using RAG system
-        answer, sources, source_links = rag_system.query(request.query, session_id)
+        answer, sources, source_links, chunks = rag_system.query(request.query, session_id)
 
         return QueryResponse(
             answer=answer,
             sources=sources,
             source_links=source_links,
+            chunks=chunks,
             session_id=session_id,
         )
     except Exception as e:
@@ -111,19 +113,46 @@ async def clear_session(request: ClearSessionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint with system diagnostics"""
+    try:
+        analytics = rag_system.get_course_analytics()
+        return {
+            "status": "healthy",
+            "courses_loaded": analytics["total_courses"],
+            "course_titles": analytics["course_titles"],
+            "chromadb_path": config.CHROMA_PATH,
+            "max_results": config.MAX_RESULTS,
+            "embedding_model": config.EMBEDDING_MODEL,
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e)
+        }
+
+
 @app.on_event("startup")
 async def startup_event():
     """Load initial documents on startup"""
     docs_path = "../docs"
     if os.path.exists(docs_path):
-        print("Loading initial documents...")
+        print("=" * 60)
+        print("LOADING INITIAL DOCUMENTS")
+        print("=" * 60)
         try:
+            # Force clear and reload to fix stale data issue
             courses, chunks = rag_system.add_course_folder(
-                docs_path, clear_existing=False
+                docs_path, clear_existing=True
             )
-            print(f"Loaded {courses} courses with {chunks} chunks")
+            print(f"[SUCCESS] Loaded {courses} courses with {chunks} chunks")
+            if courses == 0 or chunks == 0:
+                print("[WARNING] No courses or chunks loaded! Check docs folder.")
         except Exception as e:
-            print(f"Error loading documents: {e}")
+            print(f"[ERROR] Loading documents failed: {e}")
+            import traceback
+            traceback.print_exc()
 
 
 import os

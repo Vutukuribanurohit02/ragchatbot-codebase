@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(test:*)",
+      "Bash(uv sync:*)",
+      "Bash(curl:*)",
+      "Bash(uv run:*)",
+      "Bash(timeout 10 uv run:*)",
+      "Bash(timeout 15 uv run:*)",
+      "Bash(python -m json.tool:*)"
     ],
     "deny": [],
     "ask": []

@@ -121,7 +121,7 @@ class RAGSystem:
 
     def query(
         self, query: str, session_id: Optional[str] = None
-    ) -> Tuple[str, List[str], List[str]]:
+    ) -> Tuple[str, List[str], List[str], List[str]]:
         """
         Process a user query using the RAG system with tool-based search.
 
@@ -130,7 +130,7 @@ class RAGSystem:
             session_id: Optional session ID for conversation context
 
         Returns:
-            Tuple of (response, sources list, source_links list)
+            Tuple of (response, sources list, source_links list, chunks list)
         """
         # Create prompt for the AI with clear instructions
         prompt = f"""Answer this question about course materials: {query}"""
@@ -148,9 +148,15 @@ class RAGSystem:
             tool_manager=self.tool_manager,
         )
 
-        # Get sources and source links from the search tool
+        # Get sources, source links, and chunks from the search tool
         sources = self.tool_manager.get_last_sources()
         source_links = self.tool_manager.get_last_source_links()
+        chunks = self.tool_manager.get_last_chunks()
+
+        # Debug logging
+        print(f"[RAG System] Sources retrieved: {sources}")
+        print(f"[RAG System] Source links retrieved: {source_links}")
+        print(f"[RAG System] Chunks retrieved: {len(chunks)} chunks")
 
         # Reset sources after retrieving them
         self.tool_manager.reset_sources()
@@ -159,8 +165,8 @@ class RAGSystem:
         if session_id:
             self.session_manager.add_exchange(session_id, query, response)
 
-        # Return response with sources and links from tool searches
-        return response, sources, source_links
+        # Return response with sources, links, and chunks from tool searches
+        return response, sources, source_links, chunks
 
     def get_course_analytics(self) -> Dict:
         """Get analytics about the course catalog"""
